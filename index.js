@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const { connectDB } = require("./db");
-// const propertyRoutes = require("./routes/propertyRoutes");
+const propertyRoutes = require("./routes/propertyRoutes");
 
 dotenv.config();
 
@@ -17,7 +17,7 @@ app.use(express.json());
 app.get('/', (req, res) => {
     res.send('Welcome to API')
 })
-// app.use("/api/properties", propertyRoutes);
+app.use("/api/properties", propertyRoutes);
 
 // start server
 app.listen(port, async () => {
