@@ -17,12 +17,14 @@ let db;
 async function connectDB() {
     try {
         await client.connect();
-        db = client.db("HomeNestDB");
+        db = client.db("ph_assignment-10");
         console.log("✅ MongoDB Connected Successfully");
+
     } catch (err) {
         console.error("❌ MongoDB Connection Failed:", err);
     }
 }
+
 
 function getDB() {
     return db;
