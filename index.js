@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const { connectDB } = require("./db");
 const propertyRoutes = require("./routes/propertyRoutes");
 const userRoutes = require("./routes/userRoutes");
+const reviewRoutes = require("./routes/reviewRoutes")
 
 dotenv.config();
 
@@ -20,10 +21,11 @@ app.get('/', (req, res) => {
 })
 app.use("/api/properties", propertyRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/reviews", reviewRoutes)
 
 // start server
 app.listen(port, async () => {
     await connectDB();
-    
+
     console.log(`🚀 Server running on port ${port}`);
 });
