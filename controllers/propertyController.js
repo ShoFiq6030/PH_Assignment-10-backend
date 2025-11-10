@@ -48,6 +48,11 @@ async function addProperty(req, res) {
       ...req.body,
       createdAt: new Date(),
     };
+    if (!property.propertyName || !property.description) {
+      return res.status(500).json({
+        message: "Property name,description,category,price,rooms,bedrooms,bath,Garages,location,image are required",
+      });
+    }
 
     const result = await db.collection("properties").insertOne(property);
 

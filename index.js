@@ -19,9 +19,22 @@ app.use(express.json());
 app.get('/', (req, res) => {
     res.send('Welcome to API')
 })
+
 app.use("/api/properties", propertyRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/reviews", reviewRoutes)
+
+// 404 API
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        message: `Not Found - ${req.originalUrl}`,
+        error: {
+            status: 404,
+            method: req.method
+        }
+    });
+});
 
 // start server
 app.listen(port, async () => {
