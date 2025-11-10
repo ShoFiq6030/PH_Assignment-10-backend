@@ -18,6 +18,28 @@ async function getAllProperties(req, res) {
   }
 }
 
+//GET a properties
+async function getProperty(req, res) {
+  const { propertyId } = req.params
+  const propertyObjectId = new ObjectId(propertyId);
+  try {
+    const db = getDB();
+    const property = await db
+      .collection("properties")
+      .findOne({ _id: propertyObjectId })
+    // console.log(property);
+
+    if (property) {
+      res.status(200).json(property);
+    } else {
+      res.status(404).json({ message: "Property not found" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching properties" });
+  }
+}
+
 // POST add new property
 async function addProperty(req, res) {
   try {
@@ -39,4 +61,5 @@ async function addProperty(req, res) {
   }
 }
 
-module.exports = { getAllProperties, addProperty };
+
+module.exports = { getAllProperties, addProperty, getProperty };
