@@ -1,5 +1,7 @@
 const { getDB } = require("../db");
 const { generateToken } = require("../utils/jwt");
+const admin = require("../firebase/firebaseAdmin");
+
 
 // Create a new user
 async function createUser(req, res) {
@@ -39,7 +41,6 @@ async function createUser(req, res) {
 }
 
 //Login User
-
 
 
 async function loginUser(req, res) {
@@ -125,5 +126,46 @@ async function getUserByToken(req, res) {
     }
 }
 
+// login by google 
+async function googleLogin(req, res) {
+    const { firebaseToken } = req.body;
 
-module.exports = { createUser, loginUser, getUserByEmail, getUserByToken };
+    try {
+        // Verify Firebase ID token
+
+        const decoded = await admin.auth().verifyIdToken(firebaseToken);
+
+        const db = getDB();
+        const users = db.collection("users");
+
+        // Check if user exists
+        let user = await users.findOne({ email: decoded.email });
+
+        // If not, create new user
+        if (!user) {
+            const newUser = {
+                name: decoded.name || decoded.email.split("@")[0],
+                email: decoded.email,
+                photoURL: decoded.picture,
+                googleUid: decoded.uid,
+                provider: "google",
+                createdAt: new Date(),
+            };
+
+            const result = await users.insertOne(newUser);
+            user = { _id: result.insertedId, ...newUser };
+        }
+
+        // Create your own JWT token
+        const token = generateToken(user)
+
+        res.status(200).json({ token, user });
+    } catch (err) {
+        console.error("Google login error:", err);
+        res.status(401).json({ message: "Invalid Google token", error: err.message });
+    }
+};
+
+
+
+module.exports = { createUser, loginUser, getUserByEmail, getUserByToken, googleLogin };
