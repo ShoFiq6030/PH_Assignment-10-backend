@@ -41,30 +41,80 @@ async function getProperty(req, res) {
 }
 
 // POST add new property
+
+
 async function addProperty(req, res) {
   try {
     const db = getDB();
-    const property = {
-      ...req.body,
-      createdAt: new Date(),
-    };
-    if (!property.propertyName || !property.description) {
-      return res.status(500).json({
-        message: "Property name,description,category,price,rooms,bedrooms,bath,Garages,location,image are required",
+
+    const {
+      propertyName,
+      description,
+      category,
+      price,
+      Rooms,
+      Bedrooms,
+      Bath,
+      Garages,
+      location,
+      image,
+      userId,
+      userName,
+      userEmail,
+    } = req.body;
+
+    // ✅ Validation
+    if (
+      !propertyName ||
+      !description ||
+      !category ||
+      !price ||
+      !Rooms ||
+      !Bedrooms ||
+      !Bath ||
+      !Garages ||
+      !location ||
+      !image
+    ) {
+      return res.status(400).json({
+        message:
+          "All fields are required: propertyName, description, category, price, Rooms, Bedrooms, Bath, Garages, location, and image.",
       });
     }
 
+    const property = {
+      propertyName,
+      description,
+      category,
+      price: Number(price),
+      Rooms: Number(Rooms),
+      Bedrooms: Number(Bedrooms),
+      Bath: Number(Bath),
+      Garages: Number(Garages),
+      location,
+      image,
+      userId: new ObjectId(userId),
+      userName,
+      userEmail,
+      createdAt: new Date(),
+    };
+
+    // ✅ Insert into DB
     const result = await db.collection("properties").insertOne(property);
 
-    res.status(201).json({
-      message: "Property added successfully",
-      insertedId: result.insertedId,
+    return res.status(201).json({
+      message: "Property added successfully.",
+      propertyId: result.insertedId,
     });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error adding property" });
+  } catch (error) {
+    console.error("Error adding property:", error.message);
+    return res.status(500).json({
+      message: "Internal Server Error. Failed to add property.",
+      error: error.message,
+    });
   }
 }
+
 
 
 module.exports = { getAllProperties, addProperty, getProperty };
