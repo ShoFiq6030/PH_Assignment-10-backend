@@ -46,6 +46,7 @@ async function loginUser(req, res) {
     try {
         const db = getDB();
         const { email, password } = req.body;
+        console.log(email);
 
         // Check fields
         if (!email || !password) {
@@ -60,7 +61,7 @@ async function loginUser(req, res) {
 
         //Compare password 
 
-        if (password !== user.password) {
+        if (Number(password) !== Number(user.password)) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
 
@@ -103,4 +104,26 @@ async function getUserByEmail(req, res) {
     }
 }
 
-module.exports = { createUser, loginUser, getUserByEmail };
+// get user info with token
+async function getUserByToken(req, res) {
+
+    try {
+        const db = getDB();
+        const userData = req.user;
+        console.log(userData);
+        const email = userData.email
+        const user = await db.collection("users").findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found..." });
+        }
+
+        res.json(user);
+    } catch (err) {
+        console.error("Error fetching user:", err);
+        res.status(500).json({ message: "Error fetching user" });
+    }
+}
+
+
+module.exports = { createUser, loginUser, getUserByEmail, getUserByToken };
