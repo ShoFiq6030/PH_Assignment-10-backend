@@ -18,6 +18,116 @@ async function getAllProperties(req, res) {
   }
 }
 
+//delete property
+async function deleteProperty(req, res) {
+  try {
+    const { propertyId } = req.params;
+
+
+    if (!propertyId) {
+      return res.status(400).json({ message: "Invalid property ID " });
+    }
+
+    const db = getDB();
+    const collection = db.collection("properties");
+
+
+    const result = await collection.deleteOne({
+      _id: new ObjectId(propertyId),
+    });
+
+
+    if (result.deletedCount === 0) {
+
+      return res.status(404).json({ message: "Property not found" });
+    }
+
+
+    res.status(200).json({ message: "Property deleted successfully" });
+
+  } catch (err) {
+    console.error("Error deleting property:", err);
+    res.status(500).json({ message: "Error deleting property" });
+  }
+}
+//update property
+/**
+ * PATCH /properties/:propertyId
+ * Updates a property with the provided fields.
+ */
+async function updateProperty(req, res) {
+  try {
+    const { propertyId } = req.params;
+    const {
+      propertyName,
+      description,
+      category,
+      price,
+      Rooms,
+      Bedrooms,
+      Bath,
+      Garages,
+      location,
+      image,
+    } = req.body;
+
+    // ---- 1. Validate ID -------------------------------------------------
+    if (!propertyId) {
+      return res.status(400).json({ message: "Property ID is required" });
+    }
+    console.log(propertyId);
+
+    // ---- 2. Build the $set object only with supplied fields ------------
+    const updateFields = {};
+
+    if (propertyName !== undefined) updateFields.propertyName = propertyName;
+    if (description !== undefined) updateFields.description = description;
+    if (category !== undefined) updateFields.category = category;
+    if (price !== undefined) updateFields.price = Number(price);
+    if (Rooms !== undefined) updateFields.Rooms = Number(Rooms);
+    if (Bedrooms !== undefined) updateFields.Bedrooms = Number(Bedrooms);
+    if (Bath !== undefined) updateFields.Bath = Number(Bath);
+    if (Garages !== undefined) updateFields.Garages = Number(Garages);
+    if (location !== undefined) updateFields.location = location;
+    if (image !== undefined) updateFields.image = image;
+
+    // If nothing to update → early return
+    if (Object.keys(updateFields).length === 0) {
+      return res.status(400).json({ message: "No fields to update" });
+    }
+
+    console.log(updateFields);
+    // ---- 3. Perform the update -----------------------------------------
+    const db = getDB();
+    const result = await db
+      .collection("properties")
+      .updateOne(
+        { _id: new ObjectId(propertyId) },
+        { $set: updateFields }
+      );
+    console.log(result);
+    // ---- 4. Check if the document existed -------------------------------
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Property not found" });
+    }
+
+    // Optional: fetch & return the fresh document
+    const updatedProperty = await db
+      .collection("properties")
+      .findOne({ _id: new ObjectId(propertyId) });
+
+    // ---- 5. Success response --------------------------------------------
+    res.status(200).json({
+      message: "Property updated successfully",
+      property: updatedProperty,
+    });
+  } catch (err) {
+    console.error("Error updating property:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+
 // get all properties by user ID
 async function getAllPropertiesByUserId(req, res) {
   try {
@@ -141,4 +251,4 @@ async function addProperty(req, res) {
 
 
 
-module.exports = { getAllProperties, addProperty, getProperty, getAllPropertiesByUserId };
+module.exports = { getAllProperties, addProperty, getProperty, getAllPropertiesByUserId, deleteProperty, updateProperty };
