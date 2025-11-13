@@ -18,6 +18,31 @@ async function getAllProperties(req, res) {
   }
 }
 
+// get all properties by user ID
+async function getAllPropertiesByUserId(req, res) {
+  try {
+    const { userId } = req.params;
+    const db = getDB();
+
+    // Validate userId
+    if (!ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    // Filter by userId
+    const properties = await db
+      .collection("properties")
+      .find({ userId: new ObjectId(userId) })
+      .sort({ createdAt: -1 })
+      .toArray();
+
+    res.json(properties);
+  } catch (err) {
+    console.error("Error fetching properties by user:", err);
+    res.status(500).json({ message: "Error fetching properties" });
+  }
+}
+
 //GET a properties
 async function getProperty(req, res) {
   const { propertyId } = req.params
@@ -41,7 +66,6 @@ async function getProperty(req, res) {
 }
 
 // POST add new property
-
 
 async function addProperty(req, res) {
   try {
@@ -117,4 +141,4 @@ async function addProperty(req, res) {
 
 
 
-module.exports = { getAllProperties, addProperty, getProperty };
+module.exports = { getAllProperties, addProperty, getProperty, getAllPropertiesByUserId };
