@@ -8,16 +8,18 @@ const {
   deleteReview,
 } = require("../controllers/reviewController");
 
-// Public — get all reviews for a property
+// get all reviews for a property
 router.get("/all-reviews/:propertyId", getPropertyReviews);
 
-// Private — add review
+//  add review
 router.post("/add-review", verifyToken, createReview);
 
-// Private — get user's own reviews
+//  get user's own reviews
 router.get("/my-reviews", verifyToken, getMyReviews);
 
-// Private — delete a review
+//  delete a review
 router.delete("/:id", verifyToken, deleteReview);
+
+
 
 module.exports = router;

@@ -54,23 +54,37 @@ async function getPropertyReviews(req, res) {
 
 // Get reviews by logged-in user (My Ratings Page)
 async function getMyReviews(req, res) {
-    try {
-        const db = getDB();
-        const userEmail = req.user.email;
-        console.log(userEmail);
+  try {
+    const db = getDB();
+    const userEmail = req.user.email;
 
-        const reviews = await db
-            .collection("reviews")
-            .find({ userEmail })
-            .sort({ createdAt: -1 })
-            .toArray();
+    const reviews = await db.collection("reviews").aggregate([
+      { $match: { userEmail } },
 
-        res.status(200).json(reviews);
-    } catch (err) {
-        console.error("Error fetching user reviews:", err);
-        res.status(500).json({ message: "Error fetching user reviews" });
-    }
+      {
+        $lookup: {
+          from: "properties",
+          let: { pid: { $toObjectId: "$propertyId" } },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$_id", "$$pid"] } } }
+          ],
+          as: "propertyData"
+        }
+      },
+
+      { $unwind: "$propertyData" },
+
+      { $sort: { createdAt: -1 } }
+    ]).toArray();
+
+    res.status(200).json(reviews);
+
+  } catch (err) {
+    console.error("Error fetching user reviews:", err);
+    res.status(500).json({ message: "Error fetching user reviews" });
+  }
 }
+
 
 // Delete review
 async function deleteReview(req, res) {
