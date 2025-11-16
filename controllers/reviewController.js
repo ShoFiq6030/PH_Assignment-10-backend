@@ -26,7 +26,7 @@ async function createReview(req, res) {
         };
 
         const result = await db.collection("reviews").insertOne(newReview);
-        res.status(201).json({ message: "Review added successfully", review: result });
+        res.status(201).json({ message: "Review added successfully", review: newReview });
     } catch (err) {
         console.error("Error creating review:", err);
         res.status(500).json({ message: "Error creating review" });

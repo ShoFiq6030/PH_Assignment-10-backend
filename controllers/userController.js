@@ -14,7 +14,16 @@ async function createUser(req, res) {
             return res.status(400).json({ message: "Name, email, and password are required" });
         }
 
-        // if user already exists
+        // 🔍 Password validation
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z]).{6,}$/;
+
+        if (!passwordRegex.test(password)) {
+            return res.status(400).json({
+                message: "Password must contain at least 1 uppercase letter, 1 lowercase letter, and be at least 6 characters long."
+            });
+        }
+
+        // Check if user exists
         const existingUser = await db.collection("users").findOne({ email });
         if (existingUser) {
             return res.status(409).json({ message: "User already exists" });
@@ -34,11 +43,13 @@ async function createUser(req, res) {
             message: "User registered successfully",
             insertedId: result.insertedId,
         });
+
     } catch (err) {
         console.error("Error creating user:", err);
         res.status(500).json({ message: "Error creating user" });
     }
 }
+
 
 //Login User
 

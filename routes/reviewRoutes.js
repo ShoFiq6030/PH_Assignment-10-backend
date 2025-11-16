@@ -12,7 +12,7 @@ const {
 router.get("/all-reviews/:propertyId", getPropertyReviews);
 
 // Private — add review
-router.post("/", verifyToken, createReview);
+router.post("/add-review", verifyToken, createReview);
 
 // Private — get user's own reviews
 router.get("/my-reviews", verifyToken, getMyReviews);
