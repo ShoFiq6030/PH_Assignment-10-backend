@@ -3,8 +3,8 @@ const { readFileSync } = require("fs");
 const path = require("path");
 
 // ✅ Resolve file path correctly
-const serviceAccountPath = path.resolve(__dirname, "./ph-assignment-10-firebase-.json");
-const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, "utf8"));
+const decoded = Buffer.from(process.env.FB_SERVICE_KEY, "base64").toString("utf8");
+const serviceAccount = JSON.parse(decoded);
 
 // ✅ Initialize only once
 if (!admin.apps.length) {
