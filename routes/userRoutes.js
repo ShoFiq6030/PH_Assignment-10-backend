@@ -1,5 +1,5 @@
 const express = require("express");
-const { createUser, loginUser, getUserByEmail, getUserByToken, googleLogin } = require("../controllers/userController");
+const { createUser, loginUser, getUserById, getUserByToken, googleLogin } = require("../controllers/userController");
 const { verifyToken } = require("../utils/jwt");
 
 const router = express.Router();
@@ -16,8 +16,8 @@ router.post('/login', loginUser)
 router.post("/google-login", googleLogin);
 
 
-// Get single user by email 
-router.get("/user-details/:email", getUserByEmail);
+// Get single user by id 
+router.get("/user-details/:id", verifyToken,getUserById);
 
 // get user by token 
 router.get("/token/profile", verifyToken, getUserByToken);

@@ -1,6 +1,7 @@
 const { getDB } = require("../db");
 const { generateToken } = require("../utils/jwt");
 const admin = require("../firebase/firebaseAdmin");
+const { ObjectId } = require("mongodb");
 
 
 // Create a new user
@@ -99,11 +100,16 @@ async function loginUser(req, res) {
 
 
 // Get single user by email
-async function getUserByEmail(req, res) {
+async function getUserById(req, res) {
     try {
         const db = getDB();
-        const email = req.params.email;
-        const user = await db.collection("users").findOne({ email });
+        const userId = req.params.id;
+        const reqUser = req.user._id
+        // console.log(userId,reqUser);
+        if (userId !== reqUser) {
+            return res.status(404).json({ message: "Unauthorized" });
+        }
+        const user = await db.collection("users").findOne({ _id: new ObjectId(userId) });
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
@@ -179,4 +185,4 @@ async function googleLogin(req, res) {
 
 
 
-module.exports = { createUser, loginUser, getUserByEmail, getUserByToken, googleLogin };
+module.exports = { createUser, loginUser, getUserById, getUserByToken, googleLogin };
