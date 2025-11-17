@@ -59,7 +59,7 @@ async function loginUser(req, res) {
     try {
         const db = getDB();
         const { email, password } = req.body;
-        console.log(email);
+        // console.log(email);
 
         // Check fields
         if (!email || !password) {
@@ -128,7 +128,7 @@ async function getUserByToken(req, res) {
     try {
         const db = getDB();
         const userData = req.user;
-        console.log(userData);
+        // console.log(userData);
         const email = userData.email
         const user = await db.collection("users").findOne({ email });
 

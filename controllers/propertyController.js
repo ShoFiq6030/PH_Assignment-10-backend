@@ -75,7 +75,7 @@ async function updateProperty(req, res) {
     if (!propertyId) {
       return res.status(400).json({ message: "Property ID is required" });
     }
-    console.log(propertyId);
+    // console.log(propertyId);
 
     // ---- 2. Build the $set object only with supplied fields ------------
     const updateFields = {};
@@ -96,7 +96,7 @@ async function updateProperty(req, res) {
       return res.status(400).json({ message: "No fields to update" });
     }
 
-    console.log(updateFields);
+    // console.log(updateFields);
     // ---- 3. Perform the update -----------------------------------------
     const db = getDB();
     const result = await db
@@ -105,7 +105,7 @@ async function updateProperty(req, res) {
         { _id: new ObjectId(propertyId) },
         { $set: updateFields }
       );
-    console.log(result);
+    // console.log(result);
     // ---- 4. Check if the document existed -------------------------------
     if (result.matchedCount === 0) {
       return res.status(404).json({ message: "Property not found" });

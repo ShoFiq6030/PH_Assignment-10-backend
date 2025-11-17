@@ -14,7 +14,7 @@ function generateToken(user) {
 
 // Verify JWT 
 function verifyToken(req, res, next) {
-    console.log(req);
+    // console.log(req);
     const authHeader = req.headers.authorization;
     // console.log(authHeader);
 
