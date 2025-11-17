@@ -37,8 +37,16 @@ app.use((req, res) => {
 });
 
 // start server
-app.listen(port, async () => {
-    await connectDB();
+const startServer = async () => {
+    try {
+        await connectDB(); 
+        app.listen(port, () => {
+            console.log(`🚀 Server running on port ${port}`);
+        });
+    } catch (err) {
+        console.error("❌ Failed to start server:", err);
+        process.exit(1);
+    }
+};
 
-    console.log(`🚀 Server running on port ${port}`);
-});
+startServer();
