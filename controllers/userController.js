@@ -29,11 +29,13 @@ async function createUser(req, res) {
         if (existingUser) {
             return res.status(409).json({ message: "User already exists" });
         }
+        const stringPassword = password.toString()
+        console.log(stringPassword);
 
         const newUser = {
             name,
             email,
-            password,
+            password: stringPassword,
             photoURL: photoURL || "",
             createdAt: new Date(),
         };
@@ -74,7 +76,7 @@ async function loginUser(req, res) {
 
         //Compare password 
 
-        if (Number(password) !== Number(user.password)) {
+        if (password !== user.password) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
 
