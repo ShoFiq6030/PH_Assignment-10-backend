@@ -5,10 +5,24 @@ const { ObjectId } = require("mongodb");
 async function getAllProperties(req, res) {
   try {
     const db = getDB();
+
+    const search = req.query.search || "";
+    const sortBy = req.query.sortBy || "createdAt";
+    
+
+
+    const order = req.query.order === "asc" ? 1 : -1;
+
+    // console.log(search);
+
+    const searchFilter = search
+      ? { propertyName: { $regex: search, $options: "i" } }
+      : {};
+
     const properties = await db
       .collection("properties")
-      .find()
-      .sort({ createdAt: -1 })
+      .find(searchFilter)
+      .sort({ [sortBy]: order })
       .toArray();
 
     res.json(properties);
@@ -17,6 +31,7 @@ async function getAllProperties(req, res) {
     res.status(500).json({ message: "Error fetching properties" });
   }
 }
+
 
 //delete property
 async function deleteProperty(req, res) {
