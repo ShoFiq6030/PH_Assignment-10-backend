@@ -8,7 +8,7 @@ async function getAllProperties(req, res) {
 
     const search = req.query.search || "";
     const sortBy = req.query.sortBy || "createdAt";
-    
+
 
 
     const order = req.query.order === "asc" ? 1 : -1;
@@ -84,6 +84,7 @@ async function updateProperty(req, res) {
       Garages,
       location,
       image,
+      area
     } = req.body;
 
     // ---- 1. Validate ID -------------------------------------------------
@@ -105,6 +106,7 @@ async function updateProperty(req, res) {
     if (Garages !== undefined) updateFields.Garages = Number(Garages);
     if (location !== undefined) updateFields.location = location;
     if (image !== undefined) updateFields.image = image;
+    if (area !== undefined) updateFields.area = area;
 
     // If nothing to update → early return
     if (Object.keys(updateFields).length === 0) {
@@ -210,6 +212,7 @@ async function addProperty(req, res) {
       userId,
       userName,
       userEmail,
+      area
     } = req.body;
 
     // ✅ Validation
@@ -245,6 +248,7 @@ async function addProperty(req, res) {
       userId: new ObjectId(userId),
       userName,
       userEmail,
+      area,
       createdAt: new Date(),
     };
 
