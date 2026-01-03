@@ -14,9 +14,13 @@ async function createUser(req, res) {
         if (!name || !email || !password) {
             return res.status(400).json({ message: "Name, email, and password are required" });
         }
-        if (req.user !== "admin") {
-            return res.status(400).json({ message: "Only admin can create a admin" });
+
+        if (role === "admin") {
+            if (req.user !== "admin") {
+                return res.status(400).json({ message: "Only admin can create a admin" });
+            }
         }
+
 
         // 🔍 Password validation
         const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z]).{6,}$/;
@@ -95,7 +99,7 @@ async function loginUser(req, res) {
                 email: user.email,
                 photoURL: user.photoURL,
                 createdAt: user.createdAt,
-                role:user.role
+                role: user.role
             },
         });
 
