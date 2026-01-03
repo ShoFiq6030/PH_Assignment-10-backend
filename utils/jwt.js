@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "safasdf";
 
 function generateToken(user) {
     return jwt.sign(
-        { _id: user._id, email: user.email, name: user.name },
+        { _id: user._id, email: user.email, name: user.name, role: user.role },
         JWT_SECRET,
         { expiresIn: "7d" }
     );

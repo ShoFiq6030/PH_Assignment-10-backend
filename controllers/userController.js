@@ -9,10 +9,13 @@ async function createUser(req, res) {
     try {
         const db = getDB();
 
-        const { name, email, password, photoURL } = req.body;
+        const { name, email, password, photoURL, role } = req.body;
 
         if (!name || !email || !password) {
             return res.status(400).json({ message: "Name, email, and password are required" });
+        }
+        if (req.user !== "admin") {
+            return res.status(400).json({ message: "Only admin can create a admin" });
         }
 
         // 🔍 Password validation
@@ -38,6 +41,7 @@ async function createUser(req, res) {
             password: stringPassword,
             photoURL: photoURL || "",
             createdAt: new Date(),
+            role: role || "user"
         };
 
         const result = await db.collection("users").insertOne(newUser);
@@ -91,6 +95,7 @@ async function loginUser(req, res) {
                 email: user.email,
                 photoURL: user.photoURL,
                 createdAt: user.createdAt,
+                role:user.role
             },
         });
 
