@@ -177,6 +177,7 @@ async function googleLogin(req, res) {
                 photoURL: decoded.picture,
                 googleUid: decoded.uid,
                 provider: "google",
+                role:"user",
                 createdAt: new Date(),
             };
 
