@@ -57,6 +57,18 @@ async function deleteProperty(req, res) {
       return res.status(404).json({ message: "Property not found" });
     }
 
+    // Remove property ID from user's properties array
+    try {
+      const property = await collection.findOne({ _id: new ObjectId(propertyId) });
+      if (property && property.userId) {
+        await db.collection("users").updateOne(
+          { _id: property.userId },
+          { $pull: { properties: new ObjectId(propertyId) } }
+        );
+      }
+    } catch (err) {
+      console.error("Error updating user properties array:", err);
+    }
 
     res.status(200).json({ message: "Property deleted successfully" });
 
@@ -254,6 +266,16 @@ async function addProperty(req, res) {
 
     // ✅ Insert into DB
     const result = await db.collection("properties").insertOne(property);
+
+    // Add property ID to user's properties array
+    try {
+      await db.collection("users").updateOne(
+        { _id: new ObjectId(userId) },
+        { $push: { properties: result.insertedId } }
+      );
+    } catch (err) {
+      console.error("Error updating user properties array:", err);
+    }
 
     return res.status(201).json({
       message: "Property added successfully.",
